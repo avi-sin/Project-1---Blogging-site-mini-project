@@ -4,7 +4,9 @@
   "description": "Repository for backend cohort - Radon",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "Nodemon src/index.js"
+    
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/sabihak89/radon/issues"
   },
-  "homepage": "https://github.com/sabihak89/radon#readme"
+  "homepage": "https://github.com/sabihak89/radon#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
 }
