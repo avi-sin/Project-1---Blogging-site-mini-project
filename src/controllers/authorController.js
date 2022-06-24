@@ -12,12 +12,24 @@ const isValid = function (value) {
     return true
 }
 
+const isValidRequestBody = function(requestBody) {
+    return Object.keys(requestBody).length > 0
+        //will return an array of all keys. so, we can simply get the length of an array with .length
+}
+
 const createAuthor = async function (req, res) {
     try {
         let authorData = req.body
         let keysArray = Object.keys(authorData)
 
         if (keysArray.length !== 0) {
+
+            if (!isValid(authorData.fname)) return res.status(400).send({ status: false, message: 'First name is required' })
+            if (!isValid(authorData.lname)) return res.status(400).send({ status: false, message: 'Last name is required' })
+            if (!isValid(authorData.title)) return res.status(400).send({ status: false, message: 'Title is required' })
+            if (!isValid(authorData.email)) return res.status(400).send({ status: false, message: 'email is required' })
+            if (!isValid(authorData.password)) return res.status(400).send({ status: false, message: 'Password is required' })
+
             let email = authorData.email
             let validEmail = validator.validate(email)
 
