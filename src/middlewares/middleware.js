@@ -43,8 +43,14 @@ const authorize = async function (req, res, next) {
 const authDelByQuery = async function (req, res, next) {
     try {
         let authorId = req.query.authorId
+
+        // if authorId is provided in query params but not valid
         if ( authorId && !mongoose.Types.ObjectId.isValid(authorId) ) return res.status(400).send({ status: false, msg: "authorId is invalid."})
+
+        // if authorId is provided in query params and doesn't match with the logged-in author
         if ( authorId && authorId !== decodedToken.authorId ) return res.status(400).send({ status: false, msg: "You are not authorized to delete these blogs. authorId doesn't belong to you."})
+        
+        // if authorId is provided in query params and matches with the logged-in author or not provided in query params at all
         req.authorId = decodedToken.authorId
         next()
     } catch (err) {

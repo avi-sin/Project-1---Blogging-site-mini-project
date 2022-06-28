@@ -149,15 +149,15 @@ const updateBlog = async function (req, res) {
 
 const delByQuery = async function (req, res) {
     try {
-        let data = req.query
-        data.authorId = req.authorId
+        let data = req.query  // data is provided in query params to delete the blog(s)
+        data.authorId = req.authorId  // a new key value pair is added to the data provided in query params
         
         let mandatory = { isDeleted: false, isPublished: false, ...data };
 
-        let findBlogs = await blogModel.find( mandatory )
-        if ( findBlogs.length === 0 ) return res.status(400).send({ status: false, msg: "No such blog found to delete." })
+        let findBlogs = await blogModel.find( mandatory )  // to find all the blogs of the author as per the request made
+        if ( findBlogs.length === 0 ) return res.status(400).send({ status: false, msg: "No such blog found to delete." })  // --> if no blog is found to delete
 
-        let deleted = await blogModel.updateMany( mandatory, { isDeleted: true, deletedAt: new Date() }, { new: true } )
+        let deleted = await blogModel.updateMany( mandatory, { isDeleted: true, deletedAt: new Date() }, { new: true } )  // --> to delete the blogs if found
         return res.status(200).send({ status: true, data: deleted })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
