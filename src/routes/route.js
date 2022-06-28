@@ -8,7 +8,6 @@ router.post('/authors', authorController.createAuthor)  // POST api to create an
 
 router.post('/login', authorController.loginAuthor)  // POST api for an author to login
 
-// router.post('/blogs', blogController.createBlog)
 router.post('/blogs', middleware.authenticate, blogController.createBlog)  // POST api to create a blog
 
 router.get('/blogs', middleware.authenticate, blogController.getBlogs) // GET api to get the blog(s)
@@ -17,8 +16,7 @@ router.put('/blogs/:blogId', middleware.authenticate, middleware.authorize, blog
 
 router.delete('/blogs/:blogId', middleware.authenticate, middleware.authorize, blogController.deleteBlogById)  // DELETE api to delete a blog
 
-// router.delete('/blogs', blogController.deleteByQuery)
-router.delete('/blogs', middleware.authenticate, middleware.authorize, blogController.deleteByQuery)  // DELETE api to delete the blog(s)
+router.delete('/blogs', middleware.authenticate, middleware.authDelByQuery, blogController.delByQuery)  // DELETE api to delete the blog(s)
 
 
 module.exports = router;  // --> exported

@@ -24,6 +24,11 @@ const isValid = function (value) {
 }
 
 
+const isValidTitle = function (title) {
+    return ['Mr', 'Mrs', 'Miss'].indexOf(title) !== -1
+}
+
+
 /*
 
 const isValidRequestBody = function(requestBody) {
@@ -57,6 +62,8 @@ const createAuthor = async function (req, res) {
         if ( !isValid(fname) || !isValid(lname) || !isValid(title) || !isValid(email) || !isValid(password) ) {
             return res.status(400).send({ status: false, msg: `Enter valid details in following field(s): ${inValid}` })
         }
+
+        if ( !isValidTitle ( title ) ) return res.status(400).send({ status: false, msg: "title can either be 'Mr', 'Mrs' or 'Miss'."})
         
         let validEmail = validator.validate(email)  // To validate the email, 'email-validator' package is used.
 
@@ -65,7 +72,7 @@ const createAuthor = async function (req, res) {
 
             if ( !authorFound ) {  // Email is not present in the database
                 let authorCreated = await authorModel.create(authorData)
-                res.status(201).send({ status: true, author: authorCreated })
+                res.status(201).send({ status: true, data: authorCreated })
             } else {
                 res.status(400).send({ status: false, msg: "Email already in use." })  // Email is already present in the database.
             }
@@ -87,7 +94,7 @@ const loginAuthor = async function (req, res) {
     try {
         let email = req.body.email
         let password = req.body.password
-        if ( !email || !password ) return res.status(400).send({ status: false, msg: "Provide the email and password." })  // if either email, password or both not present in the request body.
+        if ( !email || !password ) return res.status(400).send({ status: false, msg: "Provide the email and password to login." })  // if either email, password or both not present in the request body.
 
         let validEmail = validator.validate(email)  // to validate the email by the use of package
         if ( validEmail == false ) return res.status(400).send({ status: false, msg: "Email is not valid."})  // if email is not validated.
@@ -104,7 +111,7 @@ const loginAuthor = async function (req, res) {
             "avinash-ajit-manish-nikhilesh"               // --> secret key
         )
         res.setHeader("x-api-key", token)  // to send the token in the header of the browser used by the author(user).
-        res.status(200).send({ status: true, token: token })  // token is shown in the response body.
+        res.status(200).send({ status: true, data: {token: token} })  // token is shown in the response body.
     } catch (err) {
         res.status(500).send({ status: false, err: err.message })
     }

@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");  // importing the jsonwebtoken so as to authenticate and authorize the author.
+const blogModel = require("../models/blogModel");
+const mongoose = require('mongoose')
 
 let decodedToken
 
@@ -20,18 +22,36 @@ const authenticate = async function (req, res, next) {
 
 
 
-// ==> Authorization middleware function
+// ==> Authorization middleware function for PUT api and DELETE api by blogId in the path params
 
 const authorize = async function (req, res, next) {
     try {
-        let authorRequested = req.query.authorId  // --> authorId is provided in the query params to match with the one whose token is provided in the headers.
-        let authorLoggedin = decodedToken.authorId  // --> logged in author's authorId is extracted here.
-        if (authorRequested !== authorLoggedin) return res.status(401).send( { status: false, msg: "Not authorized." } )  // --> if both don't match.
+        let blogId = req.params.blogId  // --> authorId is provided in the query params to match with the one whose token is provided in the headers.
+        let blog = await blogModel.findById(blogId)
+        if ( !blog ) return res.status(404).send({ status: false, msg: "This blog does not exist." })
+        if ( blog.authorId.toString() !== decodedToken.authorId ) return res.status(401).send({ status: false, msg: "You are not authorized to access this blog." })
         next()  // --> next function is called when it is evident that the logged-in author is authorized.
     } catch (err) {
         return res.status(500).send({ status: false, error: err.message })
     }
 }
 
+
+
+// ==> Authorization middleware function for DELETE blog(s) by query params 
+
+const authDelByQuery = async function (req, res, next) {
+    try {
+        let authorId = req.query.authorId
+        if ( authorId && !mongoose.Types.ObjectId.isValid(authorId) ) return res.status(400).send({ status: false, msg: "authorId is invalid."})
+        if ( authorId && authorId !== decodedToken.authorId ) return res.status(400).send({ status: false, msg: "You are not authorized to delete these blogs. authorId doesn't belong to you."})
+        req.authorId = decodedToken.authorId
+        next()
+    } catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
 module.exports.authenticate = authenticate
 module.exports.authorize = authorize
+module.exports.authDelByQuery = authDelByQuery
