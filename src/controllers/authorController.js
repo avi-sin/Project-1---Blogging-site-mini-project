@@ -11,9 +11,6 @@ const isValid = function (value) {
     if ( typeof value == 'string' && value.trim().length == 0 ) {
         return false
     }
-    if ( typeof value == 'string' && value.length === 0 ) {
-        return false
-    }
     if ( typeof value == 'string' && value.length !== value.trim().length ) {
         return false
     }
@@ -72,17 +69,17 @@ const createAuthor = async function (req, res) {
 
             if ( !authorFound ) {  // Email is not present in the database
                 let authorCreated = await authorModel.create(authorData)
-                res.status(201).send({ status: true, data: authorCreated })
+                return res.status(201).send({ status: true, data: authorCreated })
             } else {
-                res.status(400).send({ status: false, msg: "Email already in use." })  // Email is already present in the database.
+                return res.status(400).send({ status: false, msg: "Email already in use." })  // Email is already present in the database.
             }
 
         } else {  // when email is not validated by the package.
-            res.status(403).send({ status: false, msg: "Email is not valid." })
+            return res.status(403).send({ status: false, msg: "Email is not valid." })
         }
 
     } catch (err) {
-        res.status(500).send({ status: false, msg: err.message })
+        return res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -99,7 +96,7 @@ const loginAuthor = async function (req, res) {
         let validEmail = validator.validate(email)  // to validate the email by the use of package
         if ( validEmail == false ) return res.status(400).send({ status: false, msg: "Email is not valid."})  // if email is not validated.
 
-        let author = await authorModel.findOne( { email: email, password: password } )  // to find that particular author document.
+        let author = await authorModel.findOne({ email: email, password: password })  // to find that particular author document.
         if ( !author ) return res.status(403).send({ status: false, msg: "Email or password is incorrect." })  // if the author document isn't found in the database.
 
         let token = jwt.sign(  // --> to generate the jwt token
@@ -111,9 +108,9 @@ const loginAuthor = async function (req, res) {
             "avinash-ajit-manish-nikhilesh"               // --> secret key
         )
         res.setHeader("x-api-key", token)  // to send the token in the header of the browser used by the author(user).
-        res.status(200).send({ status: true, data: {token: token} })  // token is shown in the response body.
+        return res.status(200).send({ status: true, data: {token: token} })  // token is shown in the response body.
     } catch (err) {
-        res.status(500).send({ status: false, err: err.message })
+        return res.status(500).send({ status: false, err: err.message })
     }
 }
 
